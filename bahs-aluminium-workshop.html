@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bah's Aluminium Workshop</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+.hero{
+background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c');
+background-size:cover;
+background-position:center;
+}
+.catalog-img:hover { transform: scale(1.05); cursor: pointer; }
+</style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<header class="bg-black text-white">
+<div class="max-w-7xl mx-auto flex justify-between items-center p-4">
+<h1 class="text-2xl font-bold">Bah's Aluminium Workshop</h1>
+<nav class="space-x-6">
+<a href="#home" class="hover:text-gray-300">Home</a>
+<button onclick="toggleSection('viewwork')" class="hover:text-gray-300">Catalog</button>
+<button onclick="toggleSection('about')" class="hover:text-gray-300">About</button>
+<button onclick="toggleSection('contact')" class="hover:text-gray-300">Contact</button>
+</nav>
+</div>
+</header>
+
+<section id="home" class="hero h-[70vh] flex items-center justify-center text-white text-center">
+<div class="p-8 rounded-2xl">
+<h2 class="text-4xl font-bold mb-4">Custom Aluminium Furniture</h2>
+<p class="mb-6">Doors, windows, chairs, tables, railings and custom aluminium designs.</p>
+<button onclick="toggleSection('viewwork')" class="bg-blue-500 px-6 py-3 rounded-xl hover:bg-blue-600">View Catalog</button>
+</div>
+</section>
+
+<section id="upload" class="max-w-5xl mx-auto py-12 px-4">
+<h2 class="text-3xl font-bold text-center mb-6">Upload New Catalog Pictures</h2>
+<div class="bg-white p-6 rounded-xl shadow text-center">
+<input type="file" id="imageUpload" multiple accept="image/*" class="mb-4" />
+<button id="addToCatalogBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Upload to Catalog</button>
+<p class="text-sm text-gray-500 mt-2">Select images from your device and click the button to add them to the catalog.</p>
+</div>
+</section>
+
+<section id="viewwork" class="max-w-7xl mx-auto py-16 px-4" style="display:none;">
+<h2 class="text-3xl font-bold text-center mb-10">Catalog</h2>
+<div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+<p class="text-center mt-6 text-gray-600">Click an image to select the design and fill the contact form to request it.</p>
+</section>
+
+<section id="about" class="py-16 max-w-6xl mx-auto px-4" style="display:none;">
+<h2 class="text-3xl font-bold text-center mb-8">About Our Workshop</h2>
+<p class="text-center max-w-3xl mx-auto">Bah's Aluminium Workshop specializes in designing and fabricating durable aluminium furniture including doors, windows, tables, railings and custom aluminium products. We focus on strong materials, modern designs and quality workmanship for homes and businesses.</p>
+</section>
+
+<section id="contact" class="bg-gray-900 text-white py-16" style="display:none;">
+<div class="max-w-5xl mx-auto px-4 text-center">
+<h2 class="text-3xl font-bold mb-6">Contact Us</h2>
+<p class="mb-4">Phone / WhatsApp: +23299888750</p>
+<p class="mb-4">Location: Kabala Highway, Timbo Makeni, Sierra Leone</p>
+<a href="https://maps.app.goo.gl/QdxjRcGF1SBTNduF6" target="_blank" class="inline-block bg-blue-500 px-6 py-3 rounded-lg hover:bg-blue-600 mb-6">Open Workshop Location on Map</a>
+<form id="whatsappForm" class="grid md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+<input id="nameInput" class="p-3 rounded text-black" placeholder="Your Name">
+<input id="phoneInput" class="p-3 rounded text-black" placeholder="Your Phone Number">
+<input id="itemInput" class="p-3 rounded text-black md:col-span-2" placeholder="Selected Design Description">
+<button type="submit" class="bg-green-500 hover:bg-green-600 p-3 rounded md:col-span-2">Send Request on WhatsApp</button>
+</form>
+</div>
+</section>
+
+<footer class="bg-black text-white text-center p-4">
+<p>© 2026 Bah's Aluminium Workshop</p>
+</footer>
+
+<script>
+function toggleSection(id) {
+  const sections = ['viewwork','about','contact','upload'];
+  sections.forEach(sec => {
+    document.getElementById(sec).style.display = (sec === id) ? 'block' : 'none';
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+const uploadInput = document.getElementById('imageUpload');
+const gallery = document.getElementById('galleryGrid');
+const addToCatalogBtn = document.getElementById('addToCatalogBtn');
+
+// Load and save catalog images
+function saveImages() {
+  localStorage.setItem('galleryImages', gallery.innerHTML);
+}
+function loadImages() {
+  const saved = localStorage.getItem('galleryImages');
+  if(saved) gallery.innerHTML = saved;
+}
+
+// Upload images to catalog (no password required)
+addToCatalogBtn.addEventListener('click', function() {
+  if(uploadInput.files.length === 0) return;
+  Array.from(uploadInput.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.className = 'rounded-xl shadow-lg transition catalog-img';
+      gallery.appendChild(img);
+      saveImages();
+    };
+    reader.readAsDataURL(file);
+  });
+  uploadInput.value = '';
+});
+
+loadImages();
+
+// Select catalog design
+let selectedImage = '';
+gallery.addEventListener('click', function(e) {
+  if(e.target.tagName === 'IMG') {
+    selectedImage = e.target.src;
+    document.getElementById('itemInput').value = 'Selected Design from Catalog';
+  }
+});
+
+// WhatsApp form submission
+const form = document.getElementById('whatsappForm');
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const name = document.getElementById('nameInput').value;
+  const phone = document.getElementById('phoneInput').value;
+  const item = document.getElementById('itemInput').value;
+  let text = `Hello Bah's Aluminium Workshop.%0AName: ${name}%0APhone: ${phone}%0AItem Requested: ${item}`;
+  if(selectedImage) text += `%0ASelected Design Photo: ${selectedImage}`;
+  window.open(`https://wa.me/23299888750?text=${text}`, '_blank');
+});
+});
+</script>
+
+</body>
+</html>
